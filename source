@@ -4558,8 +4558,8 @@ CMDs[#CMDs + 1] = {NAME = 'userid / id [player]', DESC = 'Notifies a players use
 CMDs[#CMDs + 1] = {NAME = 'copyuserid / copyid [player]', DESC = 'Copies a players user ID to your clipboard'}
 CMDs[#CMDs + 1] = {NAME = 'appearanceid / aid [player]', DESC = 'Notifies a players appearance ID'}
 CMDs[#CMDs + 1] = {NAME = 'copyappearanceid / caid [player]', DESC = 'Copies a players appearance ID to your clipboard'}
-CMDs[#CMDs + 1] = {NAME = 'bang [player] [speed]', DESC = 'owo'}
-CMDs[#CMDs + 1] = {NAME = 'unbang', DESC = 'uwu'}
+CMDs[#CMDs + 1] = {NAME = 'bang [player] [speed]', DESC = 'very bad thing...'}
+CMDs[#CMDs + 1] = {NAME = 'unbang', DESC = 'just undo that bad thing....'}
 CMDs[#CMDs + 1] = {NAME = 'carpet [player]', DESC = 'Be someones carpet'}
 CMDs[#CMDs + 1] = {NAME = 'uncarpet', DESC = 'Undoes carpet'}
 CMDs[#CMDs + 1] = {NAME = 'friend [player]', DESC = 'Sends a friend request to certain players'}
@@ -9813,21 +9813,34 @@ addcmd('headthrow',{},function(args, speaker)
 	end
 end)
 
-addcmd('animation',{'anim'},function(args, speaker)
-	if not r15(speaker) then
-		local pchar=speaker.Character
-		local AnimationId = tostring(args[1])
-		local Anim = Instance.new("Animation")
-		Anim.AnimationId = "rbxassetid://"..AnimationId
-		local k = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(Anim)
-		k:Play()
-		if args[2] then
-			k:AdjustSpeed(tostring(args[2]))
-		end
-	else
-		notify('R6 Required','This command requires the r6 rig type')
-	end
+addcmd('animation', {'anim'}, function(args, speaker)
+    if not r15(speaker) then
+        local pchar = speaker.Character
+        local AnimationId = tostring(args[1])
+        local Anim = Instance.new("Animation")
+        Anim.AnimationId = "rbxassetid://" .. AnimationId
+        local humanoid = pchar:FindFirstChildOfClass('Humanoid')
+
+        if humanoid then
+            local animTrack = humanoid:LoadAnimation(Anim)
+            animTrack:Play()
+            
+            if args[2] then
+                local speed = tonumber(args[2])
+                if speed then
+                    animTrack:AdjustSpeed(speed)
+                else
+                    notify('Error', 'Invalid speed value')
+                end
+            end
+        else
+            notify('Error', 'Humanoid not found in character')
+        end
+    else
+        notify('R6 Required', 'This command requires the R6 rig type')
+    end
 end)
+
 
 addcmd('noanim',{},function(args, speaker)
 	speaker.Character.Animate.Disabled = true
@@ -9978,6 +9991,21 @@ addcmd('tptool', {'teleporttool'}, function(args, speaker)
 			return warn("Failed to find HumanoidRootPart")
 		end
 		HRP.CFrame = CFrame.new(IYMouse.Hit.X, IYMouse.Hit.Y + 3, IYMouse.Hit.Z, select(4, HRP.CFrame:components()))
+	end)
+end)
+
+addcmd('vanishtool', {'vanishtool'}, function(args, speaker)
+	local TpTool1 = Instance.new("Tool")
+	TpTool1.Name = "tp tool but pro"
+	TpTool1.RequiresHandle = false
+	TpTool1.Parent = speaker.Backpack
+	TpTool1.Activated:Connect(function()
+		local Char = speaker.Character or workspace:FindFirstChild(speaker.Name)
+		local HRP = Char and Char:FindFirstChild("HumanoidRootPart")
+		if not Char or not HRP then
+			return warn("Failed to find HumanoidRootPart")
+		end
+		HRP.CFrame = CFrame.new(IYMouse.Hit.X + 2, IYMouse.Hit.Y + 5, IYMouse.Hit.Z, select(4, HRP.CFrame:components()))
 	end)
 end)
 
@@ -10166,6 +10194,15 @@ addcmd('tools',{'gears'},function(args, speaker)
 	end
 	copy(Lighting)
 	local function copy(instance)
+		for i,c in pairs(instance:GetChildren())do
+			if c:IsA('Tool') or c:IsA('HopperBin') then
+				c:Clone().Parent = speaker:FindFirstChildOfClass("Backpack")
+			end
+			copy(c)
+		end
+	end
+	copy(StarterGui)
+    	local function copy(instance)
 		for i,c in pairs(instance:GetChildren())do
 			if c:IsA('Tool') or c:IsA('HopperBin') then
 				c:Clone().Parent = speaker:FindFirstChildOfClass("Backpack")
@@ -11111,13 +11148,13 @@ addcmd('dupetools', {'clonetools'}, function(args, speaker)
 						v.Anchored = false
 						for _ = 1, 10 do
 							v.CFrame = HRP.CFrame
-							wait()
+							task.wait()
 						end
 						v.CanCollide = x
 					end)
 				end
 			end
-			wait(.1)
+			task.wait(.1)
 			Tools = {}
 		end
 		TempPos = TempPos + Vector3.new(10, math.random(-5, 5), 0)
@@ -11731,27 +11768,46 @@ addcmd('fastkill',{'fastfekill'},function(args, speaker)
 	end
 end)
 
-function bring(speaker,target,fast)
-	if tools(speaker) then
-		if target ~= nil then
-			local NormPos = getRoot(speaker.Character).CFrame
-			if not fast then
-				refresh(speaker)
-				wait()
-				repeat wait() until speaker.Character ~= nil and getRoot(speaker.Character)
-				wait(0.3)
-			end
-			local hrp = getRoot(speaker.Character)
-			attach(speaker,target)
-			repeat
-				wait()
-				hrp.CFrame = NormPos
-			until not getRoot(target.Character) or not getRoot(speaker.Character)
-			speaker.CharacterAdded:Wait():WaitForChild("HumanoidRootPart").CFrame = NormPos
-		end
-	else
-		notify('Tool Required','You need to have an item in your inventory to use this command')
-	end
+function bring(speaker, target, fast)
+    if tools(speaker) then
+        if target ~= nil and target.Character then
+            local speakerHRP = getRoot(speaker.Character)
+            local targetHRP = getRoot(target.Character)
+
+            if speakerHRP and targetHRP then
+                local NormPos = speakerHRP.CFrame
+                
+                if not fast then
+                    refresh(speaker)
+                    wait()
+                    repeat wait() until speaker.Character and getRoot(speaker.Character)
+                    wait(0.3)
+                end
+
+                -- Attach the speaker to the target
+                attach(speaker, target)
+
+                -- Move the speaker to the target's position
+                repeat
+                    wait()
+                    if getRoot(speaker.Character) then
+                        getRoot(speaker.Character).CFrame = NormPos
+                    end
+                until not getRoot(target.Character) or not getRoot(speaker.Character)
+
+                -- Ensure the character is properly moved upon respawn
+                local newCharacter = speaker.CharacterAdded:Wait()
+                local newHRP = newCharacter:WaitForChild("HumanoidRootPart")
+                newHRP.CFrame = NormPos
+            else
+                notify('Error', 'Target character is not valid')
+            end
+        else
+            notify('Error', 'Target not specified or has no character')
+        end
+    else
+        notify('Tool Required', 'You need to have an item in your inventory to use this command')
+    end
 end
 
 addcmd('bring',{'febring'},function(args, speaker)

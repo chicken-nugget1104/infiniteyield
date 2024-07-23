@@ -9511,7 +9511,7 @@ addcmd("proness", {}, function(args, speaker)
 	pcall(execCmd, "unproness")
 	local dances = {"18494822696", "18494821038", "18494818793"}
 	local animation = Instance.new("Animation")
-	animation.AnimationId = "rbxassetid://" .. dances[math.random(1, #dances)]
+	animation.AnimationId = "rbxassetid://18494822696"
 	danceTrack2 = speaker.Character:FindFirstChildWhichIsA("Humanoid"):LoadAnimation(animation)
 	danceTrack2.Looped = true
 	danceTrack2:Play()
@@ -9788,7 +9788,9 @@ addcmd('spasm',{},function(args, speaker)
 		SpasmAnim = Instance.new("Animation")
 		SpasmAnim.AnimationId = "rbxassetid://"..AnimationId
 		Spasm = pchar:FindFirstChildOfClass('Humanoid'):LoadAnimation(SpasmAnim)
+        task.wait(0.1)
 		Spasm:Play()
+        task.wait(0.1)
 		Spasm:AdjustSpeed(99)
 	else
 		notify('R6 Required','This command requires the r6 rig type')
@@ -10255,7 +10257,7 @@ addcmd('console',{},function(args, speaker)
 			printoutput(message)
 		end
 	end
-	wait(1)
+	task.wait(1)
 	notify('Console','Press F9 to open the console')
 end)
 
@@ -10368,7 +10370,7 @@ addcmd('loopgoto',{},function(args, speaker)
 		loopgoto = nil
 		if speaker.Character:FindFirstChildOfClass('Humanoid') and speaker.Character:FindFirstChildOfClass('Humanoid').SeatPart then
 			speaker.Character:FindFirstChildOfClass('Humanoid').Sit = false
-			wait(.1)
+			task.wait(.1)
 		end
 		loopgoto = Players[v]
 		local distance = 3
@@ -10384,7 +10386,7 @@ addcmd('loopgoto',{},function(args, speaker)
 				if Players[v].Character ~= nil then
 					getRoot(speaker.Character).CFrame = getRoot(Players[v].Character).CFrame + Vector3.new(distance,1,0)
 				end
-				wait(lDelay)
+				task.wait(lDelay)
 			else
 				loopgoto = nil
 			end

@@ -2149,7 +2149,7 @@ eventEditor = (function()
 						for count,arg in pairs(args) do
 							cmdStr = cmdStr:gsub("%$"..count,arg)
 						end
-						wait(cmd[3] or 0)
+						task.wait(cmd[3] or 0)
 						execCmd(cmdStr)
 					end))
 				end
@@ -2858,17 +2858,17 @@ function saves()
 					warn("Save Json Error:", response)
 					warn("Overwriting Save File")
 					writefileCooldown("IY_FE.iy", defaults)
-					wait()
+					task.wait()
 					saves()
 				end
 			else
 				writefileCooldown("IY_FE.iy", defaults)
-				wait()
+				task.wait()
 				saves()
 			end
 		else
 			writefileCooldown("IY_FE.iy", defaults)
-			wait()
+			task.wait()
 			if pcall(function() readfile("IY_FE.iy") end) then
 				saves()
 			else
@@ -4447,6 +4447,7 @@ CMDs[#CMDs + 1] = {NAME = 'flashback / diedtp', DESC = 'Teleports you to where y
 CMDs[#CMDs + 1] = {NAME = 'walltp', DESC = 'Teleports you above/over any wall you run into'}
 CMDs[#CMDs + 1] = {NAME = 'nowalltp / unwalltp', DESC = 'Disables walltp'}
 CMDs[#CMDs + 1] = {NAME = 'teleporttool / tptool', DESC = 'Gives you a teleport tool'}
+CMDs[#CMDs + 1] = {NAME = 'damagetool [damageAmmount] [damageRadius]', DESC = 'Self explanitory...'}
 CMDs[#CMDs + 1] = {NAME = '', DESC = ''}
 CMDs[#CMDs + 1] = {NAME = 'logs', DESC = 'Opens the logs GUI'}
 CMDs[#CMDs + 1] = {NAME = 'chatlogs / clogs', DESC = 'Log what people say or whisper'}
@@ -4570,6 +4571,7 @@ CMDs[#CMDs + 1] = {NAME = 'pathfindwalkto / pathfindfollow [player]', DESC = 'Fo
 CMDs[#CMDs + 1] = {NAME = 'pathfindwalktowaypoint / pathfindwalktowp [waypoint]', DESC = 'Walk to a waypoint using pathfinding'}
 CMDs[#CMDs + 1] = {NAME = 'unwalkto / unfollow', DESC = 'Stops following a player'}
 CMDs[#CMDs + 1] = {NAME = 'orbit [player] [speed] [distance]', DESC = 'Makes your character orbit around a player with an optional speed and an optional distance'}
+CMDs[#CMDs + 1] = {NAME = 'orbitplanet [player] [speed] [distance] [upDownspeed] [cycleTime]', DESC = 'Makes your character orbit around a player with some optional settings (PLANET EDITION)'}
 CMDs[#CMDs + 1] = {NAME = 'unorbit', DESC = 'Disables orbit'}
 CMDs[#CMDs + 1] = {NAME = 'stareat / stare [player]', DESC = 'Stare / look at a player'}
 CMDs[#CMDs + 1] = {NAME = 'unstareat / unstare [player]', DESC = 'Disables stareat'}
@@ -7081,7 +7083,7 @@ end
 addcmd('fly',{},function(args, speaker)
 	if not IsOnMobile then
 		NOFLY()
-		wait()
+		task.wait()
 		sFLY()
 	else
 		mobilefly(speaker)
@@ -9147,6 +9149,56 @@ addcmd("orbit", {}, function(args, speaker)
     end
 end)
 
+addcmd("orbitplanet", {}, function(args, speaker)
+    execCmd("unorbit nonotify")
+    local target = Players:FindFirstChild(getPlayer(args[1], speaker)[1])
+    local root = getRoot(speaker.Character)
+    local humanoid = speaker.Character:FindFirstChildWhichIsA("Humanoid")
+    
+    if target and target.Character and getRoot(target.Character) and root and humanoid then
+        local rotation = 0
+        local speed = tonumber(args[2]) or 0.2
+        local distance = tonumber(args[3]) or 6
+        local upDownSpeed = tonumber(args[4]) or 1
+        local cycleTime = tonumber(args[5]) or 5
+        
+        local elapsedTime = 0
+        local orbit = true
+        local orbit1, orbit2, orbit3, orbit4
+
+        orbit1 = RunService.Heartbeat:Connect(function(deltaTime)
+            pcall(function()
+                elapsedTime = elapsedTime + deltaTime
+                if elapsedTime >= cycleTime then
+                    elapsedTime = 0
+                    orbit = not orbit
+                end
+                
+                if orbit then
+                    rotation = rotation + speed
+                    local orbitPosition = CFrame.new(root.Position) * CFrame.Angles(0, math.rad(rotation), 0) * CFrame.new(distance, 0, 0)
+                    target.Character:SetPrimaryPartCFrame(orbitPosition)
+                else
+                    local height = math.sin(elapsedTime * upDownSpeed) * distance
+                    local orbitPosition = CFrame.new(root.Position) * CFrame.new(0, height, distance)
+                    target.Character:SetPrimaryPartCFrame(orbitPosition)
+                end
+            end)
+        end)
+        
+        orbit2 = RunService.RenderStepped:Connect(function()
+            pcall(function()
+                root.CFrame = CFrame.new(root.Position, target.Character.PrimaryPart.Position)
+            end)
+        end)
+        
+        orbit3 = humanoid.Died:Connect(function() execCmd("unorbit") end)
+        orbit4 = humanoid.Seated:Connect(function(value) if value then execCmd("unorbit") end end)
+        
+        notify("Orbit Planet", "Started orbiting around " .. formatUsername(target))
+    end
+end)
+
 addcmd("unorbit", {}, function(args, speaker)
     if orbit1 then orbit1:Disconnect() end
     if orbit2 then orbit2:Disconnect() end
@@ -10066,19 +10118,41 @@ addcmd('tptool', {'teleporttool'}, function(args, speaker)
 	end)
 end)
 
-addcmd('vanishtool', {'vanishtool'}, function(args, speaker)
-	local TpTool1 = Instance.new("Tool")
-	TpTool1.Name = "tp tool but pro"
-	TpTool1.RequiresHandle = false
-	TpTool1.Parent = speaker.Backpack
-	TpTool1.Activated:Connect(function()
-		local Char = speaker.Character or workspace:FindFirstChild(speaker.Name)
-		local HRP = Char and Char:FindFirstChild("HumanoidRootPart")
-		if not Char or not HRP then
-			return warn("Failed to find HumanoidRootPart")
-		end
-		HRP.CFrame = CFrame.new(IYMouse.Hit.X + 2, IYMouse.Hit.Y + 5, IYMouse.Hit.Z, select(4, HRP.CFrame:components()))
-	end)
+addcmd('damagetool', {'dmgtool'}, function(args, speaker)
+    local damageAmount = tonumber(args[1]) or 10 -- Default damage amount is 10 if not specified
+    local damageRadius = tonumber(args[2]) or 10 -- Default radius is 10 if not specified
+
+    local DamageTool = Instance.new("Tool")
+    DamageTool.Name = "Damage Tool"
+    DamageTool.RequiresHandle = false
+    DamageTool.Parent = speaker.Backpack
+
+    DamageTool.Activated:Connect(function()
+        local Char = speaker.Character or workspace:FindFirstChild(speaker.Name)
+        local HRP = Char and Char:FindFirstChild("HumanoidRootPart")
+        if not Char or not HRP then
+            return warn("Failed to find HumanoidRootPart")
+        end
+
+        local players = game:GetService("Players"):GetPlayers()
+        local charPosition = HRP.Position
+
+        for _, player in ipairs(players) do
+            if player ~= speaker then -- Don't damage the speaker
+                local targetChar = player.Character
+                local targetHRP = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+                if targetHRP then
+                    local distance = (targetHRP.Position - charPosition).magnitude
+                    if distance <= damageRadius then
+                        local humanoid = targetChar:FindFirstChildOfClass("Humanoid")
+                        if humanoid then
+                            humanoid:TakeDamage(damageAmount)
+                        end
+                    end
+                end
+            end
+        end
+    end)
 end)
 
 addcmd('clickdelete',{},function(args, speaker)

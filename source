@@ -2772,7 +2772,7 @@ reference = (function()
 		end
 		local pressTime = tick()
 		lastPress = pressTime
-		wait(2)
+		task.wait(2)
 		if lastPress ~= pressTime then return end
 		inviteButton.Text = "Copy Discord Invite Link (https://discord.gg/78ZuWSq)"
 	end)
@@ -3150,12 +3150,12 @@ function notify(text,text2,length)
 				pinNotification:Disconnect()
 				notificationPinned = true
 				Title_2.BackgroundTransparency = 1
-				wait(0.5)
+				task.wait(0.5)
 				Title_2.BackgroundTransparency = 0
 			end)
 		end)
 		Notification:TweenPosition(UDim2.new(1, Notification.Position.X.Offset, 1, 0), "InOut", "Quart", 0.5, true, nil)
-		wait(0.6)
+		task.wait(0.6)
 		local closepressed = false
 		if text2 then
 			Title_2.Text = text
@@ -7848,6 +7848,7 @@ addcmd('volume',{'vol'},function(args, speaker)
 end)
 
 addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
+        //changelog as of 7/25/24 at 4:59 AM EST: made it disable beams, not fully delete smoke just make it kinda transparent i guess, changed how meshpart support works (just make it non double sided just incase that causes some lag???)
 	local Terrain = workspace:FindFirstChildOfClass('Terrain')
 	Terrain.WaterWaveSize = 0
 	Terrain.WaterWaveSpeed = 0
@@ -7857,9 +7858,13 @@ addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
 	Lighting.FogEnd = 9e9
 	settings().Rendering.QualityLevel = 1
 	for i,v in pairs(game:GetDescendants()) do
-		if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") or v:IsA("WedgePart") then
+		if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") or v:IsA("WedgePart") then
 			v.Material = "Plastic"
 			v.Reflectance = 0
+		else if v:IsA("MeshPart") then
+			v.Material = "Plastic"
+			v.Reflectance = 0
+                        v.DoubleSided = false
 		elseif v:IsA("Decal") then
 			v.Transparency = 1
 		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
@@ -7867,6 +7872,11 @@ addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
 		elseif v:IsA("Explosion") then
 			v.BlastPressure = 1
 			v.BlastRadius = 1
+		elseif v:IsA("Beam") then
+			v.Enabled = false
+		elseif v:IsA("Smoke") then
+			v.Opacity = 0.86
+                        v.TimeScale = 0.5
 		end
 	end
 	for i,v in pairs(Lighting:GetDescendants()) do
@@ -7882,7 +7892,7 @@ addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
 			elseif child:IsA('Sparkles') then
 				RunService.Heartbeat:Wait()
 				child:Destroy()
-			elseif child:IsA('Smoke') or child:IsA('Fire') then
+			elseif child:IsA('Fire') then
 				RunService.Heartbeat:Wait()
 				child:Destroy()
 			end
@@ -7901,6 +7911,7 @@ addcmd('antilagunstable',{},function(args, speaker)
 	Lighting.GlobalShadows = false
 	Lighting.FogEnd = 9e9
 	settings().Rendering.QualityLevel = 1
+        // workspace.StreamingTargetRadius = 1014
 	for i,v in pairs(game:GetDescendants()) do
 		if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("CornerWedgePart") or v:IsA("WedgePart") or v:IsA("TrussPart") then
 			v.Material = "Plastic"
@@ -7911,7 +7922,8 @@ addcmd('antilagunstable',{},function(args, speaker)
                         v.TextureID = 0
                         v.DoubleSided = false
 		elseif v:IsA("Decal") then
-			v.Transparency = 1
+                        v.TextureID = 0 // isnt this just a better fix for transparency? or something? do they not care???
+			// v.Transparency = 1
 		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
 			v.Lifetime = NumberRange.new(0)
 		elseif v:IsA("Explosion") then
@@ -7920,10 +7932,10 @@ addcmd('antilagunstable',{},function(args, speaker)
 		elseif v:IsA("Beam") then
 			v.Enabled = false
 		elseif v:IsA("Smoke") then
-			v.Opacity = 0.85
+			v.Opacity = 0.86
                         v.TimeScale = 0.5
-		elseif v:IsA("PitchShiftSoundEffect") then
-			v.Enabled = false // more audio stuff soon??
+		elseif v:IsA("PitchShiftSoundEffect") or v:IsA("EchoSoundEffect") then
+			v.Enabled = false // more audio stuff soon?? (EDIT: added support for echo sound effect, not like any games use these...) (ANOTHER EDIT: once i add all audio stuff here i will put this into base uh antilag)
 		end
 	end
 	for i,v in pairs(Lighting:GetDescendants()) do

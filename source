@@ -2854,7 +2854,7 @@ function saves()
 					if json.eventBinds ~= nil then loadedEventData = json.eventBinds end
 				end)
 				if not success then
-					jsonAttempts = jsonAttempts + 1
+					jsonAttempts += 1
 					warn("Save Json Error:", response)
 					warn("Overwriting Save File")
 					writefileCooldown("IY_FE.iy", defaults)
@@ -3190,7 +3190,7 @@ local lastLabel = nil
 local dupeCount = 1
 function CreateLabel(Name, Text)
 	if lastMessage == Name..Text then
-		dupeCount = dupeCount+1
+		dupeCount += 1
 		lastLabel.Text = Time()..' - ['..Name..']: '..Text..' (x'..dupeCount..')'
 	else
 		if dupeCount > 1 then dupeCount = 1 end
@@ -3489,14 +3489,14 @@ ColorsButton.MouseButton1Click:Connect(function()
 								pressing = false
 							end)
 
-							startNum = startNum + 1
+							startNum += 1
 							func(startNum)
 							while pressing do
 								if tick()-startTime > 0.3 then
-									startNum = startNum + 1
+									startNum += 1
 									func(startNum)
 								end
-								wait(0.1)
+								task.wait(0.1)
 							end
 						end
 					end)
@@ -3532,7 +3532,7 @@ ColorsButton.MouseButton1Click:Connect(function()
 									startNum = startNum - 1
 									func(startNum)
 								end
-								wait(0.1)
+								task.wait(0.1)
 							end
 						end
 					end)
@@ -4083,7 +4083,7 @@ ChoosePart.MouseButton1Click:Connect(function()
 				pWayPoints[#pWayPoints + 1] = {NAME = selected.Adornee.Name..tpNameExt, COORD = {selected.Adornee}}
 			else
 				if isNumber(tpNameExt) then
-					tpNameExt = tpNameExt+1
+					tpNameExt += 1
 				else
 					tpNameExt = 1
 				end
@@ -4224,7 +4224,7 @@ IndexContents = function(str,bool,cmdbar,Ianim)
 		if v:IsA("TextButton") then
 			if bool then
 				if Match(v.Text,str) then
-					indexnum = indexnum + 1
+					indexnum += 1
 					v.Visible = true
 					if topCommand == nil then
 						topCommand = v.Text
@@ -7867,8 +7867,8 @@ addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
 			v.Reflectance = 0
                         v.DoubleSided = false
 		elseif v:IsA("Decal") then
-                        v.TextureID = 0 // isnt this just a better fix for transparency? or something? do they not care???
-			// v.Transparency = 1
+                        v.TextureID = 0 -- isnt this just a better fix for transparency? or something? do they not care???
+			-- v.Transparency = 1
 		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
 			v.Lifetime = NumberRange.new(0)
 		elseif v:IsA("Explosion") then
@@ -7904,7 +7904,7 @@ addcmd('antilagunstable',{},function(args, speaker)
 	Lighting.GlobalShadows = false
 	Lighting.FogEnd = 9e9
 	settings().Rendering.QualityLevel = 1
-        // workspace.StreamingTargetRadius = 1014
+        -- workspace.StreamingTargetRadius = 1014
 	for i,v in pairs(game:GetDescendants()) do
 		if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("CornerWedgePart") or v:IsA("WedgePart") or v:IsA("TrussPart") then
 			v.Material = "Plastic"
@@ -7915,8 +7915,8 @@ addcmd('antilagunstable',{},function(args, speaker)
                         v.TextureID = 0
                         v.DoubleSided = false
 		elseif v:IsA("Decal") then
-                        v.TextureID = 0 // isnt this just a better fix for transparency? or something? do they not care???
-			// v.Transparency = 1
+                        v.TextureID = 0 -- isnt this just a better fix for transparency? or something? do they not care???
+			-- v.Transparency = 1
 		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
 			v.Lifetime = NumberRange.new(0)
 		elseif v:IsA("Explosion") then
@@ -11104,7 +11104,7 @@ addcmd('unlight',{'nolight'},function(args, speaker)
 	end
 end)
 
-addcmd('unmorph',{'nomorph'},function(args, speaker) // made for BFB 3D RP
+addcmd('unmorph',{'nomorph'},function(args, speaker) -- made for BFB 3D RP
 	for i,v in pairs(speaker.Character:GetDescendants()) do
 		if v.ClassName == "Model" then
 			v:Destroy()
@@ -11112,7 +11112,7 @@ addcmd('unmorph',{'nomorph'},function(args, speaker) // made for BFB 3D RP
 	end
 end)
 
-addcmd('unscript',{'noscript'},function(args, speaker) // made for BFB 3D RP
+addcmd('unscript',{'noscript'},function(args, speaker) -- made for BFB 3D RP
 	for i,v in pairs(speaker.Character:GetDescendants()) do
 		if v.ClassName == "LocalScript" then
 			v:Destroy()

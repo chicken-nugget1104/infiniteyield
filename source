@@ -2053,7 +2053,7 @@ function writefileCooldown(name,data)
 			cooldown = true
 			writefile(name, data)
 		else
-			repeat task.wait() until cooldown == false
+			repeat wait() until cooldown == false
 			writefileCooldown(name,data)
 		end
 		task.wait(3)
@@ -4131,7 +4131,7 @@ function updateCamera(child, parent)
 	if parent ~= workspace then
 		CamMoved:Disconnect()
 		CameraChanged:Disconnect()
-		repeat task.wait() until workspace.CurrentCamera
+		repeat wait() until workspace.CurrentCamera
 		CameraChanged = workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(UpdateToViewport)
 		CamMoved = workspace.CurrentCamera.AncestryChanged:Connect(updateCamera)
 	end
@@ -4882,7 +4882,7 @@ Players.LocalPlayer.CharacterAdded:Connect(function()
 		execCmd('clip')
 	end
 
-	repeat task.wait() until getRoot(Players.LocalPlayer.Character)
+	repeat wait() until getRoot(Players.LocalPlayer.Character)
 
 	pcall(function()
 		if spawnpoint and not refreshCmd and spawnpos ~= nil then
@@ -5556,7 +5556,7 @@ function ESP(plr)
 			local ESPholder = Instance.new("Folder")
 			ESPholder.Name = plr.Name..'_ESP'
 			ESPholder.Parent = COREGUI
-			repeat task.wait(1) until plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+			repeat wait(1) until plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 			for b,n in pairs (plr.Character:GetChildren()) do
 				if (n:IsA("BasePart")) then
 					local a = Instance.new("BoxHandleAdornment")
@@ -5598,7 +5598,7 @@ function ESP(plr)
 						espLoopFunc:Disconnect()
 						teamChange:Disconnect()
 						ESPholder:Destroy()
-						repeat task.wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+						repeat wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 						ESP(plr)
 						addedFunc:Disconnect()
 					else
@@ -5611,7 +5611,7 @@ function ESP(plr)
 						espLoopFunc:Disconnect()
 						addedFunc:Disconnect()
 						ESPholder:Destroy()
-						repeat task.wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+						repeat wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 						ESP(plr)
 						teamChange:Disconnect()
 					else
@@ -5648,7 +5648,7 @@ function CHMS(plr)
 			local ESPholder = Instance.new("Folder")
 			ESPholder.Name = plr.Name..'_CHMS'
 			ESPholder.Parent = COREGUI
-			repeat task.wait(1) until plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+			repeat wait(1) until plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 			for b,n in pairs (plr.Character:GetChildren()) do
 				if (n:IsA("BasePart")) then
 					local a = Instance.new("BoxHandleAdornment")
@@ -5669,7 +5669,7 @@ function CHMS(plr)
 				if CHMSenabled then
 					ESPholder:Destroy()
 					teamChange:Disconnect()
-					repeat task.wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+					repeat wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 					CHMS(plr)
 					addedFunc:Disconnect()
 				else
@@ -5681,7 +5681,7 @@ function CHMS(plr)
 				if CHMSenabled then
 					ESPholder:Destroy()
 					addedFunc:Disconnect()
-					repeat task.wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+					repeat wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 					CHMS(plr)
 					teamChange:Disconnect()
 				else
@@ -5709,7 +5709,7 @@ function Locate(plr)
 			local ESPholder = Instance.new("Folder")
 			ESPholder.Name = plr.Name..'_LC'
 			ESPholder.Parent = COREGUI
-			repeat task.wait(1) until plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+			repeat wait(1) until plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 			for b,n in pairs (plr.Character:GetChildren()) do
 				if (n:IsA("BasePart")) then
 					local a = Instance.new("BoxHandleAdornment")
@@ -5751,7 +5751,7 @@ function Locate(plr)
 						lcLoopFunc:Disconnect()
 						teamChange:Disconnect()
 						ESPholder:Destroy()
-						repeat task.wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+						repeat wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 						Locate(plr)
 						addedFunc:Disconnect()
 					else
@@ -5764,7 +5764,7 @@ function Locate(plr)
 						lcLoopFunc:Disconnect()
 						addedFunc:Disconnect()
 						ESPholder:Destroy()
-						repeat task.wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+						repeat wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
 						Locate(plr)
 						teamChange:Disconnect()
 					else
@@ -6902,8 +6902,8 @@ QEfly = true
 iyflyspeed = 1
 vehicleflyspeed = 1
 function sFLY(vfly)
-	repeat task.wait() until Players.LocalPlayer and Players.LocalPlayer.Character and getRoot(Players.LocalPlayer.Character) and Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-	repeat task.wait() until IYMouse
+	repeat wait() until Players.LocalPlayer and Players.LocalPlayer.Character and getRoot(Players.LocalPlayer.Character) and Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+	repeat wait() until IYMouse
 	if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
 
 	local T = getRoot(Players.LocalPlayer.Character)
@@ -8130,7 +8130,7 @@ addcmd('view',{'spectate'},function(args, speaker)
 		workspace.CurrentCamera.CameraSubject = viewing.Character
 		notify('Spectate','Viewing ' .. Players[v].Name)
 		local function viewDiedFunc()
-			repeat task.wait() until Players[v].Character ~= nil and getRoot(Players[v].Character)
+			repeat wait() until Players[v].Character ~= nil and getRoot(Players[v].Character)
 			workspace.CurrentCamera.CameraSubject = viewing.Character
 		end
 		viewDied = Players[v].CharacterAdded:Connect(viewDiedFunc)
@@ -8532,7 +8532,7 @@ addcmd('fixcam',{'restorecam'},function(args, speaker)
 	execCmd('unview')
 	workspace.CurrentCamera:remove()
 	task.wait(.1)
-	repeat task.wait() until speaker.Character ~= nil
+	repeat wait() until speaker.Character ~= nil
 	workspace.CurrentCamera.CameraSubject = speaker.Character:FindFirstChildWhichIsA('Humanoid')
 	workspace.CurrentCamera.CameraType = "Custom"
 	speaker.CameraMinZoomDistance = 0.5

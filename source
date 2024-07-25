@@ -1,9 +1,9 @@
+pcall(function() getgenv().IY_LOADED = true end)
+
 if IY_LOADED and not _G.IY_DEBUG == true then
     -- error("Infinite Yield is already running!", 0)
     return
 end
-
-pcall(function() getgenv().IY_LOADED = true end)
 
 local cloneref = cloneref or function(o) return o end
 COREGUI = cloneref(game:GetService("CoreGui"))
@@ -3679,8 +3679,8 @@ ColorsButton.MouseButton1Click:Connect(function()
 					end)	
 
 					newColor.Parent = basicColorsFrame
-					column = column + 1
-					if column == 6 then row = row + 1 column = 0 end
+					column = += 1
+					if column == 6 then row += 1 column = 0 end
 				end
 
 				row = 0
@@ -3704,8 +3704,8 @@ ColorsButton.MouseButton1Click:Connect(function()
 					end)
 
 					newColor.Parent = customColorsFrame
-					column = column + 1
-					if column == 6 then row = row + 1 column = 0 end
+					column += 1
+					if column == 6 then row += 1 column = 0 end
 				end
 
 				shade1Button.MouseButton1Click:Connect(function() if newMt.Confirm then newMt:Confirm(chosenColor,shade1) end end)
@@ -4330,7 +4330,7 @@ function autoComplete(str,curText)
 		pos = findRes+1
 		findRes = string.find(curText,"\\",pos)
 	end
-	if curText:sub(subPos+1,subPos+1) == "!" then subPos = subPos + 1 end
+	if curText:sub(subPos+1,subPos+1) == "!" then subPos += 1 end
 	Cmdbar.Text = curText:sub(1,subPos) .. str:sub(1, stop - 1)..' '
 	wait()
 	Cmdbar.Text = Cmdbar.Text:gsub( '\t', '' )
@@ -5463,7 +5463,7 @@ UserInputService.InputBegan:Connect(function(input,gameProcessed)
 	if gameProcessed then
 		if Cmdbar and Cmdbar:IsFocused() then
 			if input.KeyCode == Enum.KeyCode.Up then
-				historyCount = historyCount + 1
+				historyCount += 1
 				if historyCount > #cmdHistory then historyCount = #cmdHistory end
 				Cmdbar.Text = cmdHistory[historyCount] or ""
 				Cmdbar.CursorPosition = 1020
@@ -5508,7 +5508,7 @@ Cmdbar.FocusLost:Connect(function(enterpressed)
 		Cmdbar.Text = ""
 		IndexContents('',true,false,true)
 		if SettingsOpen == true then
-			wait(0.2)
+			task.wait(0.2)
 			Settings:TweenPosition(UDim2.new(0, 0, 0, 45), "InOut", "Quart", 0.2, true, nil)
 			CMDsF.Visible = false
 		end
@@ -5520,7 +5520,7 @@ Cmdbar.Focused:Connect(function()
 	historyCount = 0
 	canvasPos = CMDsF.CanvasPosition
 	if SettingsOpen == true then
-		wait(0.2)
+		task.wait(0.2)
 		CMDsF.Visible = true
 		Settings:TweenPosition(UDim2.new(0, 0, 0, 220), "InOut", "Quart", 0.2, true, nil)
 	end
@@ -6849,7 +6849,7 @@ addcmd('joinplayer',{'joinp'},function(args, speaker)
 			end)
 		then
 			if retries < 3 then
-				retries = retries + 1
+				retries += 1
 				print('ERROR retrying '..retries..'/3')
 				notify('Join Error','Error while trying to join. Retrying '..retries..'/3.')
 				ToServer(User,Place)

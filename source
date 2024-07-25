@@ -7848,6 +7848,7 @@ addcmd('volume',{'vol'},function(args, speaker)
 end)
 
 addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
+        //changelog as of 7/25/24 at 5:07 AM EST: merge alot of checks together that do the same thing lol, changed decal code or something... yay!!!
         //changelog as of 7/25/24 at 4:59 AM EST: made it disable beams, not fully delete smoke just make it kinda transparent i guess, changed how meshpart support works (just make it non double sided just incase that causes some lag???)
 	local Terrain = workspace:FindFirstChildOfClass('Terrain')
 	Terrain.WaterWaveSize = 0
@@ -7866,7 +7867,8 @@ addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
 			v.Reflectance = 0
                         v.DoubleSided = false
 		elseif v:IsA("Decal") then
-			v.Transparency = 1
+                        v.TextureID = 0 // isnt this just a better fix for transparency? or something? do they not care???
+			// v.Transparency = 1
 		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
 			v.Lifetime = NumberRange.new(0)
 		elseif v:IsA("Explosion") then
@@ -7874,9 +7876,6 @@ addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
 			v.BlastRadius = 1
 		elseif v:IsA("Beam") then
 			v.Enabled = false
-		elseif v:IsA("Smoke") then
-			v.Opacity = 0.86
-                        v.TimeScale = 0.5
 		end
 	end
 	for i,v in pairs(Lighting:GetDescendants()) do
@@ -7886,13 +7885,7 @@ addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
 	end
 	workspace.DescendantAdded:Connect(function(child)
 		task.spawn(function()
-			if child:IsA('ForceField') then
-				RunService.Heartbeat:Wait()
-				child:Destroy()
-			elseif child:IsA('Sparkles') then
-				RunService.Heartbeat:Wait()
-				child:Destroy()
-			elseif child:IsA('Fire') then
+			if child:IsA('ForceField') or child:IsA('Fire') or child:IsA('Smoke') or child:IsA('Sparkles') then
 				RunService.Heartbeat:Wait()
 				child:Destroy()
 			end
@@ -7901,7 +7894,7 @@ addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
 end)
 
 addcmd('antilagunstable',{},function(args, speaker)
-        print("THIS VERSION INCLUDES SUPPORT FOR MORE, WHILE MAKING THE GAME LOOK TRASH, SOON IF THIS IS PRO ENOUGH I WILL FIX IT AND MAKE IT ANTILAG. OK? OK. (Yes im discovering more lag causers...)");
+        print("THIS VERSION INCLUDES SUPPORT FOR MORE, WHILE MAKING THE GAME LOOK TRASH, SOON IF THIS IS PRO ENOUGH I WILL FIX IT AND MAKE IT ANTILAG. OK? OK. (Yes im discovering more lag causers...) (Some of this is already in antilag as of 7/25/24 at 5:06 AM EST.)");
 	local Terrain = workspace:FindFirstChildOfClass('Terrain')
 	Terrain.WaterWaveSize = 0
 	Terrain.WaterWaveSpeed = 0
@@ -7934,8 +7927,8 @@ addcmd('antilagunstable',{},function(args, speaker)
 		elseif v:IsA("Smoke") then
 			v.Opacity = 0.86
                         v.TimeScale = 0.5
-		elseif v:IsA("PitchShiftSoundEffect") or v:IsA("EchoSoundEffect") then
-			v.Enabled = false // more audio stuff soon?? (EDIT: added support for echo sound effect, not like any games use these...) (ANOTHER EDIT: once i add all audio stuff here i will put this into base uh antilag)
+		elseif v:IsA("PitchShiftSoundEffect") or v:IsA("DistortionSoundEffect") or v:IsA("EchoSoundEffect") then
+			v.Enabled = false
 		end
 	end
 	for i,v in pairs(Lighting:GetDescendants()) do
@@ -7945,13 +7938,7 @@ addcmd('antilagunstable',{},function(args, speaker)
 	end
 	workspace.DescendantAdded:Connect(function(child)
 		task.spawn(function()
-			if child:IsA('ForceField') then
-				RunService.Heartbeat:Wait()
-				child:Destroy()
-			elseif child:IsA('Sparkles') then
-				RunService.Heartbeat:Wait()
-				child:Destroy()
-			elseif child:IsA('Fire') then
+			if child:IsA('ForceField') or child:IsA('Fire') or child:IsA('Sparkles') then
 				RunService.Heartbeat:Wait()
 				child:Destroy()
 			end

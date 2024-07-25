@@ -4670,6 +4670,7 @@ CMDs[#CMDs + 1] = {NAME = 'strengthen [num]', DESC = 'Makes your character more 
 CMDs[#CMDs + 1] = {NAME = 'unstrengthen', DESC = 'Sets your characters CustomPhysicalProperties to default'}
 CMDs[#CMDs + 1] = {NAME = 'breakvelocity', DESC = 'Sets your characters velocity to 0'}
 CMDs[#CMDs + 1] = {NAME = 'spin [speed]', DESC = 'Spins your character'}
+CMDs[#CMDs + 1] = {NAME = 'spinalt [speed]', DESC = 'Spins your character in a less detectable way'}
 CMDs[#CMDs + 1] = {NAME = 'unspin', DESC = 'Disables spin'}
 CMDs[#CMDs + 1] = {NAME = 'split', DESC = 'Splits your character in half'}
 CMDs[#CMDs + 1] = {NAME = 'nilchar', DESC = 'Sets your characters parent to nil'}
@@ -4930,7 +4931,7 @@ end
 cmdHistory = {}
 local lastCmds = {}
 local historyCount = 0
-local split=" "
+local split = " "
 local lastBreakTime = 0
 function execCmd(cmdStr,speaker,store)
 	cmdStr = cmdStr:gsub("%s+$","")
@@ -5480,7 +5481,7 @@ UserInputService.InputBegan:Connect(function(input,gameProcessed)
 end)
 
 Players.LocalPlayer.Chatted:Connect(function()
-	wait()
+	task.wait()
 	if lastEnteredString then
 		local message = lastEnteredString
 		lastEnteredString = nil
@@ -5503,7 +5504,7 @@ Cmdbar.FocusLost:Connect(function(enterpressed)
 		execCmd(cmdbarText,Players.LocalPlayer,true)
 	end
 	if tabComplete then tabComplete:Disconnect() end
-	wait()
+	task.wait()
 	if not Cmdbar:IsFocused() then
 		Cmdbar.Text = ""
 		IndexContents('',true,false,true)
@@ -12111,6 +12112,24 @@ addcmd('spin',{},function(args, speaker)
 	Spin.Parent = getRoot(speaker.Character)
 	Spin.MaxTorque = Vector3.new(0, math.huge, 0)
 	Spin.AngularVelocity = Vector3.new(0,spinSpeed,0)
+end)
+
+addcmd('spinalt',{},function(args, speaker)
+        print("thanks for using a less detectable version of spin!!")
+	local spinSpeed = 20
+	if args[1] and isNumber(args[1]) then
+		spinSpeed = args[1]
+	end
+	for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
+		if v.Name == "Spinning" then
+			v:Destroy()
+		end
+	end
+	local Spin = Instance.new("BodyVelocity")
+	Spin.Name = "Spinning"
+	Spin.Parent = getRoot(speaker.Character)
+	Spin.MaxForce = Vector3.new(0, math.huge, 0)
+	Spin.Velocity = Vector3.new(0,spinSpeed,0)
 end)
 
 addcmd('unspin',{},function(args, speaker)

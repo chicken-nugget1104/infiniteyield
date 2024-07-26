@@ -4340,6 +4340,10 @@ end
 CMDs = {}
 CMDs[#CMDs + 1] = {NAME = 'discord / support / help', DESC = 'Invite to the Infinite Yield support server.'}
 CMDs[#CMDs + 1] = {NAME = 'console', DESC = 'Loads old Roblox console'}
+CMDs[#CMDs + 1] = {NAME = 'unc / unctest / unccheckevn', DESC = 'Tests all UNC Environment'}
+CMDs[#CMDs + 1] = {NAME = 'addunc / addmoreunc / adduncevn', DESC = 'Adds some UNC Environment(s)'}
+CMDs[#CMDs + 1] = {NAME = 'execute / run / code', DESC = 'Execute a LuaU code.'}
+CMDs[#CMDs + 1] = {NAME = 'vulnscheck / vulns / vuln', DESC = 'Checks if your executor has vulns'}
 CMDs[#CMDs + 1] = {NAME = 'explorer / dex', DESC = 'Opens DEX by Moon'}
 CMDs[#CMDs + 1] = {NAME = 'secureexplorer / securedex', DESC = 'Opens SECUREDEX by some guy or somethin'}
 CMDs[#CMDs + 1] = {NAME = 'olddex / odex', DESC = 'Opens Old DEX by Moon'}
@@ -10465,6 +10469,33 @@ addcmd('console',{},function(args, speaker)
 	notify('Console','Press F9 to open the console')
 end)
 
+addcmd("vulnscheck",{"vulns","vuln"},function()
+	loadstring(game:HttpGet("https://infiniteyieldreborn.xyz/vulntestsource"))()
+	notify("Check console", "Press F9 or type /console in chat to see results")
+end)
+
+addcmd("execute", {"run", "code"}, function(args, speaker)
+    local code = table.concat(args, " ")
+    local success, result = pcall(function()
+        return loadstring(code)()
+    end)
+    if success then
+        notify("Execution Success", "Code executed successfully. Check console for possible results.")
+    else
+        notify("Execution Error", "An error occurred. Check console for details.")
+    end
+end)
+
+addcmd("unc",{"unctest","unccheckevn"},function(args, speaker)
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/unified-naming-convention/NamingStandard/main/UNCCheckEnv.lua"))()
+	notify("Check console", "Press F9 or type /console in chat to see results")
+end)
+
+addcmd("addunc", {'addmoreunc', 'adduncevn'}, function(args, speaker)
+	loadstring(game:HttpGet("https://github.com/FurryBoyYT/moreunc/raw/main/iyr_init"))()
+    notify("Adding some UNC (Thanks to the community) (WARNING THIS MAY REMOVE SOME UNC)")
+end)
+
 addcmd('explorer', {'dex'}, function(args, speaker)
 	notify('Loading', 'Hold on a sec')
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/chicken-nugget1104/backup/main/dex.lua"))()
@@ -10750,32 +10781,42 @@ function getTorso(x)
 	return x:FindFirstChild("Torso") or x:FindFirstChild("UpperTorso") or x:FindFirstChild("LowerTorso") or x:FindFirstChild("HumanoidRootPart")
 end
 
-addcmd("bang", {"rape"}, function(args, speaker)
-	execCmd("unbang")
-	wait()
-	local humanoid = speaker.Character:FindFirstChildWhichIsA("Humanoid")
-	bangAnim = Instance.new("Animation")
-	bangAnim.AnimationId = not r15(speaker) and "rbxassetid://148840371" or "rbxassetid://5918726674"
-	bang = humanoid:LoadAnimation(bangAnim)
-	bang:Play(0.1, 1, 1)
-	bang:AdjustSpeed(args[2] or 3)
-	bangDied = humanoid.Died:Connect(function()
-		bang:Stop()
-		bangAnim:Destroy()
-		bangDied:Disconnect()
-		bangLoop:Disconnect()
-	end)
+local isbanging = false
+addcmd("Bang",{"rape"}, function(args, speaker)
 	if args[1] then
 		local players = getPlayer(args[1], speaker)
 		for _, v in pairs(players) do
-			local bangplr = Players[v].Name
-			local bangOffet = CFrame.new(0, 0, 2.1)
-			bangLoop = RunService.Stepped:Connect(function()
-				pcall(function()
-					local otherRoot = getTorso(Players[bangplr].Character)
-					getRoot(speaker.Character).CFrame = otherRoot.CFrame * bangOffet + 0.1
+			if table.find(devblacklist, tostring(Players[v].UserId)) ~= nil then
+				execCmd("unbang")
+				notify("Error","HEY! You cannot bang this person idiot!")
+				return
+			else
+				execCmd("unbang")
+				task.wait()
+				isbanging = true
+				local humanoid = speaker.Character:FindFirstChildWhichIsA("Humanoid")
+				bangAnim = Instance.new("Animation")
+				bangAnim.AnimationId = not r15(speaker) and "rbxassetid://148840371" or "rbxassetid://5918726674"
+				bang = humanoid:LoadAnimation(bangAnim)
+				bang:Play(0.1, 1, 1)
+				bang:AdjustSpeed(args[2] or 2)
+				bangDied = humanoid.Died:Connect(function()
+					bang:Stop()
+					bangAnim:Destroy()
+					bangDied:Disconnect()
+					isbanging = false
 				end)
-			end)
+				local bangplr = Players[v].Name
+				local bangOffet = CFrame.new(0, 0, 2.1)
+				while task.wait() do
+					if isbanging == false then
+						break
+					end
+					local otherRoot = getTorso(Players[bangplr].Character)
+					getRoot(speaker.Character).CFrame = otherRoot.CFrame * bangOffet + 0.2
+					getRoot(speaker.Character).Velocity = Vector3.new(0,0,0)
+				end
+			end		
 		end
 	end
 end)
@@ -10785,7 +10826,7 @@ addcmd("unbang", {"unrape"}, function(args, speaker)
 		bangDied:Disconnect()
 		bang:Stop()
 		bangAnim:Destroy()
-		bangLoop:Disconnect()
+		isbanging = false
 	end
 end)
 

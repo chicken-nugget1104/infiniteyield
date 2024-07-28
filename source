@@ -3684,7 +3684,7 @@ ColorsButton.MouseButton1Click:Connect(function()
 					end)	
 
 					newColor.Parent = basicColorsFrame
-					column = += 1
+					column += 1
 					if column == 6 then row += 1 column = 0 end
 				end
 
@@ -7858,8 +7858,8 @@ addcmd('volume',{'vol'},function(args, speaker)
 end)
 
 addcmd('antilag',{'boostfps','lowgraphics'},function(args, speaker)
-        //changelog as of 7/25/24 at 5:07 AM EST: merge alot of checks together that do the same thing lol, changed decal code or something... yay!!!
-        //changelog as of 7/25/24 at 4:59 AM EST: made it disable beams, not fully delete smoke just make it kinda transparent i guess, changed how meshpart support works (just make it non double sided just incase that causes some lag???)
+    -- changelog as of 7/25/24 at 5:07 AM EST: merge alot of checks together that do the same thing lol, changed decal code or something... yay!!!
+    -- Changelog as of 7/25/24 at 4:59 AM EST: made it disable beams, not fully delete smoke just make it kinda transparent i guess, changed how meshpart support works (just make it non double sided just incase that causes some lag???)
 	local Terrain = workspace:FindFirstChildOfClass('Terrain')
 	Terrain.WaterWaveSize = 0
 	Terrain.WaterWaveSpeed = 0

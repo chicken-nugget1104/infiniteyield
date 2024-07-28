@@ -4670,6 +4670,7 @@ CMDs[#CMDs + 1] = {NAME = 'strengthen [num]', DESC = 'Makes your character more 
 CMDs[#CMDs + 1] = {NAME = 'unstrengthen', DESC = 'Sets your characters CustomPhysicalProperties to default'}
 CMDs[#CMDs + 1] = {NAME = 'breakvelocity', DESC = 'Sets your characters velocity to 0'}
 CMDs[#CMDs + 1] = {NAME = 'spin [speed]', DESC = 'Spins your character'}
+CMDs[#CMDs + 1] = {NAME = 'spinalt [speed]', DESC = 'Spins your character in a less detectable way'}
 CMDs[#CMDs + 1] = {NAME = 'explode [pressure] [radius]', DESC = 'Just explode... thats it'}
 CMDs[#CMDs + 1] = {NAME = 'unspin', DESC = 'Disables spin'}
 CMDs[#CMDs + 1] = {NAME = 'split', DESC = 'Splits your character in half'}
@@ -4677,6 +4678,7 @@ CMDs[#CMDs + 1] = {NAME = 'nilchar', DESC = 'Sets your characters parent to nil'
 CMDs[#CMDs + 1] = {NAME = 'unnilchar / nonilchar', DESC = 'Sets your characters parent to workspace'}
 CMDs[#CMDs + 1] = {NAME = 'noroot / removeroot / rroot', DESC = 'Removes your characters HumanoidRootPart'}
 CMDs[#CMDs + 1] = {NAME = 'replaceroot', DESC = 'Replaces your characters HumanoidRootPart'}
+CMDs[#CMDs + 1] = {NAME = 'execute / run / code', DESC = 'Execute a LuaU code.'}
 CMDs[#CMDs + 1] = {NAME = 'clearcharappearance / clearchar / clrchar', DESC = 'Removes all accessory, shirt, pants, charactermesh, and bodycolors'}
 CMDs[#CMDs + 1] = {NAME = '', DESC = ''}
 CMDs[#CMDs + 1] = {NAME = 'animation / anim [ID] [speed]', DESC = 'Makes your character perform an animation (must be by roblox to replicate)'}
@@ -6780,6 +6782,48 @@ addcmd("autorejoin", {"autorj"}, function(args, speaker)
 	end)
 	notify("Auto Rejoin", "Auto rejoin enabled")
 end)
+
+addcmd("vulnscheck",{"vulns","vuln"},function()
+	loadstring(game:HttpGet("https://infiniteyieldreborn.xyz/vulntestsource"))()
+	notify("Check console", "Press F9 or type /console in chat to see results")
+end)
+
+addcmd("execute", {"run", "code"}, function(args, speaker)
+    local code = table.concat(args, " ")
+    local success, result = pcall(function()
+        return loadstring(code)()
+    end)
+    if success then
+        notify("Execution Success", "Code executed successfully. Check console for possible results.")
+    else
+        notify("Execution Error", "An error occurred. Check console for details.")
+    end
+end)
+
+addcmd('headstand',{},function(args, speaker)
+	local players = getPlayer(args[1], speaker)
+	if headSit then headSit:Disconnect() end
+	for i,v in pairs(players)do
+		headSit = RunService.Heartbeat:Connect(function()
+			if Players:FindFirstChild(Players[v].Name) and Players[v].Character ~= nil and getRoot(Players[v].Character) and getRoot(speaker.Character) and speaker.Character:FindFirstChildOfClass('Humanoid').Sit == true then
+				getRoot(speaker.Character).CFrame = getRoot(Players[v].Character).CFrame * CFrame.Angles(0,math.rad(0),0)* CFrame.new(0,1.6,0.4)
+			else
+				headSit:Disconnect()
+			end
+		end)
+	end
+end)
+
+addcmd("unc",{"unctest","unccheckevn"},function(args, speaker)
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/unified-naming-convention/NamingStandard/main/UNCCheckEnv.lua"))()
+	notify("Check console", "Press F9 or type /console in chat to see results")
+end)
+
+addcmd("addunc", {'addmoreunc', 'adduncevn'}, function(args, speaker)
+	loadstring(game:HttpGet("https://github.com/FurryBoyYT/moreunc/raw/main/iyr_init"))()
+    notify("Adding some UNC (Thanks to the community) (WARNING THIS MAY REMOVE SOME UNC)")
+end)
+
 
 addcmd("serverhop", {"shop"}, function(args, speaker)
     -- thanks to NoobSploit for fixing
@@ -10773,7 +10817,7 @@ addcmd("bang", {"rape"}, function(args, speaker)
 			bangLoop = RunService.Stepped:Connect(function()
 				pcall(function()
 					local otherRoot = getTorso(Players[bangplr].Character)
-					getRoot(speaker.Character).CFrame = otherRoot.CFrame * bangOffet + 0.1
+					getRoot(speaker.Character).CFrame = otherRoot.CFrame * bangOffet + 0.2
 				end)
 			end)
 		end
@@ -10831,6 +10875,24 @@ addcmd('friend',{},function(args, speaker)
 	for i,v in pairs(players)do
 		speaker:RequestFriendship(v)
 	end
+end)
+
+addcmd('spinalt',{},function(args, speaker)
+    print("thanks for using a less detectable version of spin!!")
+	local spinSpeed = 20
+    if args[1] and isNumber(args[1]) then
+		spinSpeed = args[1]
+    end
+	for i,v in pairs(getRoot(speaker.Character):GetChildren()) do
+		if v.Name == "Spinning" then
+			v:Destroy()
+		end
+	end
+	local Spin = Instance.new("BodyVelocity")
+	Spin.Name = "Spinning"
+	Spin.Parent = getRoot(speaker.Character)
+	Spin.MaxForce = Vector3.new(0, math.huge, 0)
+	Spin.Velocity = Vector3.new(0,spinSpeed,0)
 end)
 
 addcmd('unfriend',{},function(args, speaker)
